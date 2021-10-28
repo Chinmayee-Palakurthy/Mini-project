@@ -1,0 +1,28 @@
+<html>
+ <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg.jpg")}});
+height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+  
+</head>
+  <body>
+<h1> TO KNOW SPECIALIST FOR  YOUR SEVERE SYMPTOMS ENTER THE DETAILS BELOW :  </h1>
+<form action="/get_med" method="post">
+  <label for="pname">Name: </label>
+  <input type="text" id="pname" name="pname"><br><br>
+  <label for="age">Age: </label>
+  <input type="int" id="age" name="age"><br><br>
+  <label for="gsesm">General Symptom: </label>
+  <input type="text" id="gsesm" name="gsesm"><br><br>
+<label for=" g">Gender:  </label>
+  <input type="text" id="g" name="g"><br><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>

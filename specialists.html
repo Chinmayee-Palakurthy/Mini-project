@@ -1,0 +1,21 @@
+<html>
+ <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg5.jpg")}});
+  height :150vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+<body>
+<h1> To know  specialist address enter the details below: </h1>
+<form action="/get_specialist" method="post">
+  <label for="spec">Enter specialist type:</label>
+  <input type="text" id="spec" name="spec"><br><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<html>
+ <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg2.jpg")}});
+ height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+<body>
+<h1> TO KNOW NEAREST PHARMACY  ENTER THE DETAILS BELOW </h1>
+<form action="/get_stores" method="post">
+  <label for="address">Enter Your  Address:</label>
+  <input type="text" id="address" name="address"><br><br>
+  <label for="pic">Enter your pincode:</label>
+  <input type="text" id="pic" name="pic"><br><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>

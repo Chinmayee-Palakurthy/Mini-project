@@ -1,0 +1,29 @@
+<html>
+    <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg2.jpg")}});
+height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+   <body>
+<h1> Medical stores near your house are: </h1>
+<ul>
+ {% if  data|length > 0%}
+{% for item in data %}
+    <li><h2>Pharmacy name: {{item[0]}}</h2></li>
+    <li><h2> Address: {{item[1]}} </h2></li>
+    <li><h2>Phone No: {{item[2]}} </h2></li>
+{% endfor %}
+{% endif %}
+ {% if  data|length ==0 %}
+<h2>  We do not have details of pharmacy near your area at this moment .<br> We will try to update it soon<br>
+ Thanks for your patience</h2>
+{% endif %}
+</ul>
+   </body>
+</html>

@@ -1,0 +1,336 @@
+from flask import Flask, render_template, request
+import pymysql
+mydb=pymysql.connect(host="localhost",user="root",password="gate2022",database="expert_spm")
+cursor=mydb.cursor()
+app = Flask(__name__)
+@app.route('/')
+@app.route('/mini')
+def mainpage():
+    return render_template('miniprojecthtml.html')
+@app.route('/ph')
+def pharm():
+    return render_template('pharmacy.html')
+@app.route('/spec')
+def speci():
+    return render_template('specialists.html')
+@app.route('/doc')
+def doct():
+    return render_template('severe.html')
+@app.route('/med')
+def  medi():
+    return render_template('general.html')
+@app.route('/get_stores',methods=['POST','GET'])
+def get_stores():
+    if request.method == 'POST':
+        cursor.execute("select  name,address,mobile from pharmacy where pincode=%s",(request.form['pic'],))
+        result=cursor.fetchall()
+        return render_template('addressoutput.html',data=result)
+@app.route('/get_specialist',methods=['POST','GET'])
+def get_specialist():
+    if request.method == 'POST':
+       cursor.execute(" select  name,hospital_name,degree,phno,address,exp,rating,about from doctor_details where specialist=%s",(request.form['spec'],))
+       result=cursor.fetchall()
+       return render_template('specialistoutput.html',data=result)
+@app.route('/get_doc',methods=['POST','GET'])
+def get_doc():
+    if request.method == 'POST':
+       cursor.execute(" select * from doctor_details inner join severe on doctor_details.specialist=severe.specialist where severe.symptom =%s",(request.form['sesm'],))
+       result=cursor.fetchall()
+       return render_template('severeoutput.html',data=result)
+@app.route('/get_med',methods=['POST','GET'])
+def get_med():
+    if request.method == 'POST':
+       if int(request.form['age'])<=15:
+           cursor.execute("select * from general_symptoms inner join medicines on general_symptoms.disease=medicines.disease where age<=15 and general_symptoms.symptoms =%s",request.form['gsesm'],)
+       if int(request.form['age'])>15:
+           cursor.execute("select * from general_symptoms inner join medicines on general_symptoms.disease=medicines.disease where age>15 and general_symptoms.symptoms =%s",request.form['gsesm'],)
+       result=cursor.fetchall()
+       return render_template('generaloutput.html',data=result)
+app.run()
+
+     html files
+     1)file name : miniprojecthtml.html
+      <html >
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg1.jpg")}});
+height :500px;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+   </head>
+   <body >
+ <div class="header">
+	 </div>
+  <center>
+      <h1  style="color: SlateBlue"> EXPERT SYSTEM TO PRESCRIBE MEDICINES FOR GIVEN SYMPTOMS </h1>
+      <div class="w3-panel w3-leftbar w3-blue">
+    <p class="w3-xlarge w3-serif"><i><h2 style="color:red;">"if  you do not make time for your wellness, </br> you will be forced to make time for your illness"
+</h2>
+     </i></p>
+    </div>
+</center>
+</br>
+</br>
+</br>
+</br>
+ <center><a href="/ph"> <h2 style="color:white;">Pharmacy Details  </h2></a></center>
+</br>
+  <center> <a href="/spec"> <h2 style="color:yellow;">Doctor  Details </h2>  </a></center>
+</br>
+   <center><a href="/doc"> <h2 style="color:green;">Severe Symptoms </h2></a></center>
+</br>
+<center><a href="/med"> <h2 style="color:black;">General Symptoms with a home remedy </h2></a> </center>
+   </body>
+</html>
+
+ 2)file name : general.html
+ <html>
+ <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg.jpg")}});
+height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+  
+</head>
+  <body>
+<h1> TO KNOW SPECIALIST FOR  YOUR SEVERE SYMPTOMS ENTER THE DETAILS BELOW :  </h1>
+<form action="/get_med" method="post">
+  <label for="pname">Name: </label>
+  <input type="text" id="pname" name="pname"><br><br>
+  <label for="age">Age: </label>
+  <input type="int" id="age" name="age"><br><br>
+  <label for="gsesm">General Symptom: </label>
+  <input type="text" id="gsesm" name="gsesm"><br><br>
+<label for=" g">Gender:  </label>
+  <input type="text" id="g" name="g"><br><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>
+          3)file name : generaloutput.html
+<html>
+    <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg.jpg")}});
+height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+   <body>
+<h1>  The medicines for given symptoms are : </h1>
+<ul>
+ {% if  data|length > 0%}
+{% for item in data %}
+    <li><h2> Disease name : {{item[2]}} </h2> </li>
+   <li>  <h2> Medicine name : {{item[3]}} </h2></li>
+    <li> <h2>  Alternate Medicine : {{item[4]}} </h2></li>
+    <li><h2>  Dosage : {{item[5]}}</h2></li>
+   <li>  <h2> Home remedy  : {{item[7]}}</li>
+    <li> <h2>   Alterante Home remedy : {{item[8]}} </h2></li>
+     <li> <h2> Yoga recommendation : {{item[9]}} </h2></li>
+</br></br>
+{% endfor %}
+{% endif %}
+ {% if  data|length ==0 %}
+<h2>  We do not have details of  medicines for your general symptoms at this moment .<br> We will try to update it soon<br>
+ Thanks for your patience</h2>
+{% endif %}
+</ul>
+   </body>
+</html>
+          4)file name : severe.html
+<html>
+ <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg5.jpg")}});
+height :120vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+<body>
+<h1> TO KNOW SPECIALIST FOR  YOUR SEVERE SYMPTOMS ENTER THE DETAILS BELOW :  </h1>
+<centre>
+<form action="/get_doc" method="post">
+  <label for="pname">Name: </label>
+  <input type="text" id="pname" name="pname"><br><br>
+  <label for="sesm">Severe Symptom: </label>
+  <input type="text" id="sesm" name="sesm"><br><br>
+  <input type="submit" value="Submit">
+</form>
+</centre>
+</body>
+</html>
+
+          5)file name : severeoutput.html
+<html>
+   <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg3.jpg")}});
+   height :120vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+   <body>
+<h1> Specialist details are: </h1>
+<ul>
+ {% if  data|length >0 %}
+{% for item in data %}
+    <li><h4>Doctor name: {{item[0]}} </h4></li>
+    <li><h4>Hospital name: {{item[1]}} </h4></li> 
+    <li><h4> Degree :{{item[2]}} </h4> </li>
+ <li><h4>Contact details :{{item[3]}} </h4> </li>
+<li> <h4>Address : {{item[4]}} </h4></li>
+<li> <h4>Experience: {{item[5]}} </h4></li>
+<li> <h4>Rating:  {{item[6]}}</h4></li>
+<li> <h4>More  Details: {{item[7]}}</h4></li>
+<li> <h4>Specialist:  {{item[8]}}</h4></li>
+</br>
+</br>
+{% endfor %}
+{% endif %}
+ {% if  data|length ==0 %}
+<h2>  We did not find specialist for your severe symptoms at this moment .<br> We will try to update it soon<br>
+ Thanks for your patience</h2>
+{% endif %}
+</ul>
+   </body>
+</html>
+
+         6)file name : specialists.html
+<html>
+ <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg5.jpg")}});
+  height :150vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+<body>
+<h1> To know  specialist address enter the details below: </h1>
+<form action="/get_specialist" method="post">
+  <label for="spec">Enter specialist type:</label>
+  <input type="text" id="spec" name="spec"><br><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>
+
+         7)file name : specialistoutput.html
+<html>
+   <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg3.jpg")}});
+ height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+   <body>
+<h1> Specialist details are: </h1>
+<ul>
+{% if  data|length > 0%}
+{% for item in data %}
+    <li><h2>Doctor name: {{item[0]}} </h2></li>
+    <li><h2>Hospital name: {{item[1]}} </h2></li> 
+    <li><h2> Degree :{{item[2]}}</h2></li>
+ <li><h2>Contact details :{{item[3]}}</h2></li>
+<li><h2> Address : {{item[4]}}</h2></li>
+<li> <h2>Experience: {{item[5]}}</h2></li>
+<li> <h2>Rating:  {{item[6]}}</h2></li>
+<li><h2> More  Details: {{item[7]}}</h2></li>
+</br>
+{% endfor %}
+{% endif %}
+ {% if  data|length ==0 %}
+<h2>  We do not have details of mentioned specialist  at this moment .<br> We will try to update it soon<br>
+ Thanks for your patience</h2>
+{% endif %}
+</ul>
+   </body>
+</html>
+
+         8)file name : pharmacy.html
+<html>
+ <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg2.jpg")}});
+ height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+<body>
+<h1> TO KNOW NEAREST PHARMACY  ENTER THE DETAILS BELOW </h1>
+<form action="/get_stores" method="post">
+  <label for="address">Enter Your  Address:</label>
+  <input type="text" id="address" name="address"><br><br>
+  <label for="pic">Enter your pincode:</label>
+  <input type="text" id="pic" name="pic"><br><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>
+
+
+           9)file name : addressoutput.html
+<html>
+    <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg2.jpg")}});
+height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+</head>
+   <body>
+<h1> Medical stores near your house are: </h1>
+<ul>
+ {% if  data|length > 0%}
+{% for item in data %}
+    <li><h2>Pharmacy name: {{item[0]}}</h2></li>
+    <li><h2> Address: {{item[1]}} </h2></li>
+    <li><h2>Phone No: {{item[2]}} </h2></li>
+{% endfor %}
+{% endif %}
+ {% if  data|length ==0 %}
+<h2>  We do not have details of pharmacy near your area at this moment .<br> We will try to update it soon<br>
+ Thanks for your patience</h2>
+{% endif %}
+</ul>
+   </body>
+</html>

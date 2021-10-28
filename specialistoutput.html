@@ -1,0 +1,34 @@
+<html>
+   <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg3.jpg")}});
+ height :100vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+   <body>
+<h1> Specialist details are: </h1>
+<ul>
+{% if  data|length > 0%}
+{% for item in data %}
+    <li><h2>Doctor name: {{item[0]}} </h2></li>
+    <li><h2>Hospital name: {{item[1]}} </h2></li> 
+    <li><h2> Degree :{{item[2]}}</h2></li>
+ <li><h2>Contact details :{{item[3]}}</h2></li>
+<li><h2> Address : {{item[4]}}</h2></li>
+<li> <h2>Experience: {{item[5]}}</h2></li>
+<li> <h2>Rating:  {{item[6]}}</h2></li>
+<li><h2> More  Details: {{item[7]}}</h2></li>
+</br>
+{% endfor %}
+{% endif %}
+ {% if  data|length ==0 %}
+<h2>  We do not have details of mentioned specialist  at this moment .<br> We will try to update it soon<br>
+ Thanks for your patience</h2>
+{% endif %}
+</ul>
+   </body>
+</html>

@@ -1,0 +1,36 @@
+<html>
+   <head>
+<style>
+body,html{
+  background-image: url({{url_for('static' , filename="bg3.jpg")}});
+   height :120vh;
+  background-position: center;
+background-repeat: no_repeat;
+  background-size: cover;
+}
+</style>
+   <body>
+<h1> Specialist details are: </h1>
+<ul>
+ {% if  data|length >0 %}
+{% for item in data %}
+    <li><h4>Doctor name: {{item[0]}} </h4></li>
+    <li><h4>Hospital name: {{item[1]}} </h4></li> 
+    <li><h4> Degree :{{item[2]}} </h4> </li>
+ <li><h4>Contact details :{{item[3]}} </h4> </li>
+<li> <h4>Address : {{item[4]}} </h4></li>
+<li> <h4>Experience: {{item[5]}} </h4></li>
+<li> <h4>Rating:  {{item[6]}}</h4></li>
+<li> <h4>More  Details: {{item[7]}}</h4></li>
+<li> <h4>Specialist:  {{item[8]}}</h4></li>
+</br>
+</br>
+{% endfor %}
+{% endif %}
+ {% if  data|length ==0 %}
+<h2>  We did not find specialist for your severe symptoms at this moment .<br> We will try to update it soon<br>
+ Thanks for your patience</h2>
+{% endif %}
+</ul>
+   </body>
+</html>
